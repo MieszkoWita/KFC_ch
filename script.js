@@ -1,6 +1,5 @@
 const posts = [
-  "posts/2025-09-02-pierwszy-post.txt",
-  "posts/2025-09-05-drugi-post.txt"
+  "1post.txt"
 ];
 
 async function loadPosts() {
