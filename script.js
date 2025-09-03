@@ -1,3 +1,17 @@
+function captchaPassed() {
+  sessionStorage.setItem("captchaOk", "true");
+
+  document.getElementById("captcha-container").style.display = "none";
+  document.getElementById("content").style.display = "block";
+}
+
+window.onload = function() {
+  if (sessionStorage.getItem("captchaOk") === "true") {
+    document.getElementById("captcha-container").style.display = "none";
+    document.getElementById("content").style.display = "block";
+  }
+};
+
 async function loadPosts() {
   const container = document.getElementById("posts");
 
