@@ -2,19 +2,76 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8">
-  <title>Chwilowy remont w KFC</title>
+  <title>Chwilow remont w KFC</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="message">
-    <h2 class="post-title">Chwilowy remont w KFC</h2>
-    <p>W KFC aktualnie trwa remont, nie będzie można odwiedzać restauracji.</p>
-    <p></p>
-    <p>By: MieszkoWita 02.09.2025</p>
+  <div class="card">
+    <h1 class="post-title">Chwilowy remont w KFC</h1>
+    <p class="post-content">
+      W KFC aktualnie trwa remont, nie będzie można odwiedzać restauracji.
+    </p>
+
+    <p><strong>Liczba lajków:</strong> <span id="likeCount">0</span></p>
+    <button id="login">Zaloguj się przez Google</button>
+    <button id="like">👍 Lubię to</button>
   </div>
-  <div class="message">
-    <a href="index.html" class="post-link">Powrót do aktualności</a>
-  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "TWOJ_API_KEY",
+      authDomain: "TWOJ_PROJEKT.firebaseapp.com",
+      projectId: "TWOJ_PROJEKT",
+      storageBucket: "TWOJ_PROJEKT.appspot.com",
+      messagingSenderId: "NUMER",
+      appId: "APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    const postRef = doc(db, "posts", "post1");
+
+    const loginBtn = document.getElementById("login");
+    const likeBtn = document.getElementById("like");
+    const likeCount = document.getElementById("likeCount");
+
+    loginBtn.addEventListener("click", async () => {
+      await signInWithPopup(auth, provider);
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        loginBtn.style.display = "none";
+        likeBtn.style.display = "inline-block";
+      } else {
+        loginBtn.style.display = "inline-block";
+        likeBtn.style.display = "none";
+      }
+    });
+
+    async function loadLikes() {
+      const snap = await getDoc(postRef);
+      if (snap.exists()) {
+        likeCount.textContent = snap.data().likes || 0;
+      } else {
+        await setDoc(postRef, { likes: 0 });
+        likeCount.textContent = 0;
+      }
+    }
+    loadLikes();
+
+    likeBtn.addEventListener("click", async () => {
+      await updateDoc(postRef, { likes: increment(1) });
+      loadLikes();
+    });
+  </script>
 </body>
 </html>
 
